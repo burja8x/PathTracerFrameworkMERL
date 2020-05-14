@@ -127,14 +127,14 @@ namespace PathTracer
             //s.Elements.Add(new DiffuseAreaLight(new Sphere(80, Transform.Translate(400, 80, 400).A(Transform.RotateX(90))), Spectrum.Create(1), 20));
             //s.Elements.Add(new DiffuseAreaLight(new Sphere(1100, Transform.Translate(278, 280, 280).A(Transform.RotateX(90))), Spectrum.Create(1), 20));
 
-            //double[] brdfs1 = ReadMerl.Read(@"D:\NRG seminarska\gold-metallic-paint.binary");
+            double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\gold-metallic-paint.binary");
             //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\white-acrylic.binary");
             //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\white-diffuse-bball.binary");
             //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\white-fabric.binary");
             //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\white-fabric2.binary");
             //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\white-marble.binary");
             //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\white-paint.binary");
-            double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\" + brdfFileName);
+            //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\ss440.binary");
 
             // modra krogla
             //el = new Sphere(100, Transform.Translate(150, 100, 420));
@@ -147,10 +147,10 @@ namespace PathTracer
 
             //rumena krogla
             //el = new Sphere(130, Transform.Translate(400, 130, 230));
-            el = new Sphere(200, Transform.Translate(250, 200, 130));
+            el = new Sphere(200, Transform.Translate(250, 200, 230));
 
             //el.BSDF.Add(new SpecularReflection(Spectrum.ZeroSpectrum.FromRGB(Color.White),0,0));
-            //el.BSDF.Add(new SpecularReflection(Spectrum.ZeroSpectrum.FromRGB(Color.White),0.5,1.2));
+            //el.BSDF.Add(new SpecularReflection(Spectrum.ZeroSpectrum.FromRGB(Color.White),0.25,0.6));
             //el.BSDF.Add(new Lambertian(Spectrum.ZeroSpectrum.FromRGB(Color.Yellow)));
             //el.BSDF.Add(new OrenNayar(Spectrum.ZeroSpectrum.FromRGB(Color.Yellow), 5));
             el.BSDF.Add(new Merl(brdfs0));
@@ -251,7 +251,7 @@ namespace PathTracer
             {
                 double[] brdf0 = ReadMerl.Read(@"D:\NRG seminarska\" + file.Name);
 
-                el = new Sphere(35, Transform.Translate(xOff, yOff, 480));
+                el = new Sphere(36, Transform.Translate(xOff, yOff, 480));
                 el.BSDF.Add(new Merl(brdf0));
                 s.Elements.Add(el);
 

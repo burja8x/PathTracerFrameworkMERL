@@ -23,11 +23,9 @@ namespace PathTracer
             n *= binReader.ReadInt32();
             n *= binReader.ReadInt32();
             n *= binReader.ReadInt32();
-            //Console.WriteLine(n);
 
             if (n == (90 * 90 * 360 / 2))
             {
-                //Console.WriteLine("OK");
                 double[] brdf = new double[3 * n];
                 int x = 0;
 
@@ -43,69 +41,12 @@ namespace PathTracer
                 {
                     brdf[3 * i + 2] = binReader.ReadDouble() * BLUE_SCALE;
                 }
-                //while (x < n)
-                //{
-                //    //brdf[x] = binReader.ReadDouble();
-
-                    
-                //    brdf[x] = binReader.ReadDouble() * RED_SCALE;
-                //    brdf[n + x] = binReader.ReadDouble() * GREEN_SCALE;
-                //    brdf[2 * n + x] = binReader.ReadDouble() * BLUE_SCALE;
-                    
-                //    //if (x < n)
-                //    //{
-                //    //    brdf[x] = tmp * RED_SCALE;
-                //    //}
-                //    //else if (x < n * 2 && x > n)
-                //    //{
-                //    //    brdf[n + x] = tmp * GREEN_SCALE;
-                //    //}
-                //    //else
-                //    //{
-                //    //    brdf[2 * n + x] = tmp * BLUE_SCALE;
-                //    //}
-
-                //    x++;
-                //}
+               
                 binReader.Close();
 
-                //Console.WriteLine("first 10.");
-                //for (int mm = 0; mm < 10; mm++){
-                //    Console.WriteLine(brdf[mm]);
-                //}
-                
-                //for(int nn = 1000000; nn < 1000010; nn++){
-                //    Console.WriteLine(brdf[nn]);
-                //}
+                Console.WriteLine($"DONE:  {file}");
 
-                Console.WriteLine($"READ:  {file}");
                 return brdf;
-
-                int vvv = 0;
-
-                const int z = 16;
-                for (int i = 0; i < z; i++)
-                {
-                    double theta_in = i * 0.5 * Math.PI / z;
-                    for (int j = 0; j < 4 * z; j++)
-                    {
-                        double phi_in = j * 2.0 * Math.PI / (4 * z);
-                        for (int k = 0; k < z; k++)
-                        {
-                            double theta_out = k * 0.5 * Math.PI / z;
-                            for (int l = 0; l < 4 * z; l++)
-                            {
-                                double phi_out = l * 2.0 * Math.PI / (4 * z);
-
-                                (double red, double green, double blue) = lookup_brdf_val(brdf, theta_in, phi_in, theta_out, phi_out);
-                                //Console.WriteLine($"{(decimal)red}  {(decimal)green}  {(decimal)blue}");
-                                vvv++;
-                            }
-                        }
-                    }
-                }
-                Console.WriteLine(vvv);
-                Console.WriteLine("DONE");
             }
             else
             {
@@ -115,6 +56,29 @@ namespace PathTracer
             }
         }
 
+
+//        int vvv = 0;
+//        const int z = 16;
+//                for (int i = 0; i<z; i++)
+//                {
+//                    double theta_in = i * 0.5 * Math.PI / z;
+//                    for (int j = 0; j< 4 * z; j++)
+//                    {
+//                        double phi_in = j * 2.0 * Math.PI / (4 * z);
+//                        for (int k = 0; k<z; k++)
+//                        {
+//                            double theta_out = k * 0.5 * Math.PI / z;
+//                            for (int l = 0; l< 4 * z; l++)
+//                            {
+//                                double phi_out = l * 2.0 * Math.PI / (4 * z);
+//        (double red, double green, double blue) = lookup_brdf_val(brdf, theta_in, phi_in, theta_out, phi_out);
+//        //Console.WriteLine($"{(decimal)red}  {(decimal)green}  {(decimal)blue}");
+//        vvv++;
+//                            }
+//}
+//                    }
+//                }
+                
         static (double, double, double) lookup_brdf_val(double[] brdf, double theta_in, double fi_in, double theta_out, double fi_out)
         {
             // Convert to halfangle / difference angle coordinates
@@ -218,6 +182,7 @@ namespace PathTracer
             out_neki[2] += cross[2] * sin_ang;
             return out_neki;
         }
+
         static double[] cross_product(double[] v1, double[] v2, double[] out_neki)
         {
             out_neki[0] = v1[1] * v2[2] - v1[2] * v2[1];

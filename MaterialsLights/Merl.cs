@@ -20,10 +20,6 @@ namespace PathTracer
 
         public override Spectrum f(Vector3 wo, Vector3 wi)
         {
-            //Console.WriteLine($"wo {wo}");
-            //Console.WriteLine($"wi {wi}");
-
-
             Vector3 wh = wo + wi; 
             if (wh.z < 0.0)
             {
@@ -37,8 +33,8 @@ namespace PathTracer
             }
 
             wh = wh.Normalize();
-            // Directly compute the rows of the matrix performing the rotation of w_h to(0, 0, 1)
             
+
             double cos_phi_h = Utils.CosPhi(wh);
             double sin_phi_h = Utils.SinPhi(wh);
             double cos_theta_h = Utils.CosTheta(wh);
@@ -46,15 +42,14 @@ namespace PathTracer
             Vector3 w_hx = new Vector3(cos_phi_h * cos_theta_h, sin_phi_h * cos_theta_h, -sin_theta_h);
             Vector3 w_hy = new Vector3(-sin_phi_h, cos_phi_h, 0.0);
             Vector3 w_d = new Vector3(Vector3.Dot(wi, w_hx), Vector3.Dot(wi, w_hy), Vector3.Dot(wi, wh));
-            double theta_d = SphericalTheta(w_d);
-            // Wrap phi_d if needed to keep it in range
 
+            double theta_h = SphericalTheta(wh);
+            double theta_d = SphericalTheta(w_d);
             double phi_d = SphericalPhi(w_d);
             if (phi_d > Math.PI) {
                 phi_d = phi_d - Math.PI;
             }
 
-            double theta_h = SphericalTheta(wh);
 
             // Get i.
             int theta_h_idx = ThetaHalfIndex(theta_h);
@@ -64,9 +59,65 @@ namespace PathTracer
 
             return Spectrum.Create(Vector<double>.Build.Dense(new[] { brdf[3 * i], brdf[3 * i + 1], brdf[3 * i + 2] }));
         }
-        //private int MapIndex(double val, double max, int nVals) {
-        //    return Clamp((int)(val / max * nVals), 0, nVals - 1);
-        //}
+
+        public Spectrum f1(Vector3 wo, Vector3 wi)
+        {
+            Vector3 wh = wo + wi;
+            if (wh.z < 0.0)
+            {
+                wi = -wi;
+                wh = -wh;
+            }
+
+            if (wh.LengthSquared() == 0.0) // epsilon ?
+            {
+                return Spectrum.ZeroSpectrum;
+            }
+
+            wh = wh.Normalize();
+
+
+            double theta_half = Math.Acos(wh.z);
+            double fi_half = Math.Atan2(wh.y, wh.x);
+
+            Vector3 biNormal = new Vector3(0, 1, 0);
+            Vector3 normal = new Vector3(0, 0, 1);
+            Vector3 temp = RotateVector(wi, normal, -fi_half);
+            Vector3 diff = RotateVector(temp, biNormal, -theta_half);
+
+            double theta_diff = Math.Acos(diff.z);
+            double fi_diff = Math.Atan2(diff.y, diff.x);
+
+
+            // Get i.
+            int theta_h_idx = ThetaHalfIndex(theta_half);
+            int theta_d_idx = ThetaDiffIndex(theta_diff);
+            int phi_d_idx = PhiDiffIndex(fi_diff);
+            int i = phi_d_idx + (BRDF_SAMPLING_RES_PHI_D / 2) * (theta_d_idx + theta_h_idx * BRDF_SAMPLING_RES_THETA_D);
+
+            return Spectrum.Create(Vector<double>.Build.Dense(new[] { brdf[3 * i], brdf[3 * i + 1], brdf[3 * i + 2] }));
+        }
+
+        static Vector3 RotateVector(Vector3 vector, Vector3 axis, double angle)
+        {
+            double temp;
+
+            double cos_ang = Math.Cos(angle);
+            double sin_ang = Math.Sin(angle);
+
+            Vector3 out_neki = vector * cos_ang;
+
+            temp = Vector3.Dot(axis, vector);
+            temp = temp * (1.0 - cos_ang);
+
+            out_neki = out_neki + (axis * temp);
+
+            Vector3 cross = Vector3.Cross(axis, vector);
+
+            out_neki = out_neki + (cross * sin_ang);
+
+            return out_neki;
+        }
 
         private double SphericalTheta(Vector3 v) {
             return Math.Acos(Utils.Clamp(v.z, -1, 1));
@@ -82,15 +133,6 @@ namespace PathTracer
             return x;
         }
 
-        //private int Clamp(int x, int min, int max){
-        //    if (x < min){
-        //        return min;
-        //    } else if (x > max) {
-        //        return max;
-        //    } else {
-        //        return x;
-        //    }
-        //}
 
         // Lookup theta_half index
         // This is a non-linear mapping!

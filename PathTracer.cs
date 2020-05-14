@@ -50,14 +50,15 @@ namespace PathTracer
                     break;
                 }
 
-
-                L.AddTo(beta * Light.UniformSampleOneLight(si, s));
+                if ( ! specularBounce) {
+                    L.AddTo(beta * Light.UniformSampleOneLight(si, s));
+                }
 
                 (Spectrum f, Vector3 wiW, double pdf, bool bxdfIsSpecular) = ((Shape)si.Obj).BSDF.Sample_f(wo, si);
 
                 specularBounce = bxdfIsSpecular;
 
-                if (f.IsBlack() || pdf < 1e-4) break;
+                if (f.IsBlack() || pdf == 0) break;
 
                 var wi = si.SpawnRay(wiW);
 
