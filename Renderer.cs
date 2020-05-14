@@ -22,7 +22,7 @@ namespace PathTracer
     private Bitmap finalRgbImage;
     private double[,] pixelWeights;
     private long totalSamples = 0;
-    private const long maxTotalSamples = 3000000;
+    private const long maxTotalSamples = 1000000000;
 
     private Bitmap bmp;
 
@@ -84,15 +84,15 @@ namespace PathTracer
       };
             try
             {
-                DirectoryInfo d = new DirectoryInfo(@"D:\NRG seminarska\");//Assuming Test is your Folder
-                FileInfo[] Files = d.GetFiles("*.binary"); //Getting Text files
-                
-                foreach (FileInfo file in Files)
-                {
-                    Scene.brdfFileName = file.Name;
-                    Console.WriteLine(file.Name);
+                //DirectoryInfo d = new DirectoryInfo(@"D:\NRG seminarska\");
+                //FileInfo[] Files = d.GetFiles("*.binary");
 
-                    while (totalSamples < maxTotalSamples)
+                //foreach (FileInfo file in Files)
+                //{
+                //Scene.brdfFileName = file.Name;
+                //Console.WriteLine(file.Name);
+                //while (totalSamples < maxTotalSamples)
+                    while (true)
                     {
                         var samples = SamplePointsOnImagePlane(s, 1);
                         Parallel.ForEach(samples, po, samp =>
@@ -114,25 +114,25 @@ namespace PathTracer
 
                     }
 
-                Neki:
-                    try
-                    {
-                        finalRgbImage.Save(@"D:\NRG seminarska\" + DateTime.Now.ToString().Replace("/", "-").Replace(":", "-").Replace(" ", "_") + "_" + file.Name.Replace(".binary", "") + ".png", ImageFormat.Png);
-                    }
-                    catch (Exception)
-                    {
-                        Thread.Sleep(1);
-                        goto Neki;
-                    }
-                    s = Scene.CornellBox();
-                    finalImageSum = new Spectrum[pixelWidth, pixelHeight];
-                    finalImage = new Spectrum[pixelWidth, pixelHeight];
-                    finalRgbImage = new Bitmap(160, (int)Math.Round(160 / s.AspectRatio), PixelFormat.Format24bppRgb);
-                    pixelWeights = new double[pixelWidth, pixelHeight];
-                    bmp = finalRgbImage;
-                    totalSamples = 0;
+                //Neki:
+                //    try
+                //    {
+                //        finalRgbImage.Save(@"D:\NRG seminarska\" + DateTime.Now.ToString().Replace("/", "-").Replace(":", "-").Replace(" ", "_") + "_" + file.Name.Replace(".binary", "") + ".png", ImageFormat.Png);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        Thread.Sleep(1);
+                //        goto Neki;
+                //    }
+                //    s = Scene.CornellBox();
+                //    finalImageSum = new Spectrum[pixelWidth, pixelHeight];
+                //    finalImage = new Spectrum[pixelWidth, pixelHeight];
+                //    finalRgbImage = new Bitmap(160, (int)Math.Round(160 / s.AspectRatio), PixelFormat.Format24bppRgb);
+                //    pixelWeights = new double[pixelWidth, pixelHeight];
+                //    bmp = finalRgbImage;
+                //    totalSamples = 0;
                     //bmp = b;
-                }
+                //}
 
             }
             catch (OperationCanceledException)

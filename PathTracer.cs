@@ -13,30 +13,51 @@ namespace PathTracer
         {
             var L = Spectrum.ZeroSpectrum;
             var beta = Spectrum.Create(1.0);
-
+            bool specularBounce = false;
             for (int nBounces = 0; nBounces < 20; nBounces++)
             {
                 (double? d, SurfaceInteraction si) = s.Intersect(ray);
+
+                Vector3 wo = -ray.d;
+
+                if (nBounces == 0 || specularBounce)
+                {
+                    if (d != null)
+                    {
+                        L.AddTo(beta * si.Le(wo));
+                    }
+                    else
+                    {
+                        foreach (var light in s.Lights)
+                        {
+                            L.AddTo(beta * Spectrum.ZeroSpectrum); // light.Le()
+                        }
+                    }
+                }
+
 
                 if (d == null) {
                     break;
                 }
 
-                Vector3 wo = -ray.d;
 
-                if (si.Obj is Light) {
-                    if (nBounces == 0)
-                    {
-                        L.AddTo(beta * si.Le(wo));
-                    }
+                if (si.Obj is Light)
+                {
+                    //if (nBounces == 0)
+                    //{
+                    //    L.AddTo(beta * si.Le(wo));
+                    //}
                     break;
                 }
-                    
+
+
                 L.AddTo(beta * Light.UniformSampleOneLight(si, s));
 
                 (Spectrum f, Vector3 wiW, double pdf, bool bxdfIsSpecular) = ((Shape)si.Obj).BSDF.Sample_f(wo, si);
-                
-                if(f.IsBlack()) break;
+
+                specularBounce = bxdfIsSpecular;
+
+                if (f.IsBlack() || pdf < 1e-4) break;
 
                 var wi = si.SpawnRay(wiW);
 

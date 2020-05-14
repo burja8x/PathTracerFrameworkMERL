@@ -147,8 +147,8 @@ namespace PathTracer
 
         public override (Spectrum, Vector3, double) Sample_f(Vector3 wo)
         {
-            //var wi = Samplers.CosineSampleHemisphere();
-            var wi = Samplers.UniformSampleHemisphere();
+            var wi = Samplers.CosineSampleHemisphere();
+            //var wi = Samplers.UniformSampleHemisphere();
             if (wo.z < 0)
                 wi.z *= -1;
             double pdf = Pdf(wo, wi);
@@ -158,8 +158,8 @@ namespace PathTracer
         public override double Pdf(Vector3 wo, Vector3 wi)
         {
 
-            return Samplers.UniformHemispherePdf();
-            //return Samplers.CosineHemispherePdf(wo, wi);
+            //return Samplers.UniformHemispherePdf();
+            return Samplers.CosineHemispherePdf(wo, wi);
         }
     }
 }

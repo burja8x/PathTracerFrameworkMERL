@@ -23,11 +23,11 @@ namespace PathTracer
             n *= binReader.ReadInt32();
             n *= binReader.ReadInt32();
             n *= binReader.ReadInt32();
-            Console.WriteLine(n);
+            //Console.WriteLine(n);
 
             if (n == (90 * 90 * 360 / 2))
             {
-                Console.WriteLine("OK");
+                //Console.WriteLine("OK");
                 double[] brdf = new double[3 * n];
                 int x = 0;
 
@@ -78,7 +78,7 @@ namespace PathTracer
                 //    Console.WriteLine(brdf[nn]);
                 //}
 
-                Console.WriteLine("READ");
+                Console.WriteLine($"READ:  {file}");
                 return brdf;
 
                 int vvv = 0;

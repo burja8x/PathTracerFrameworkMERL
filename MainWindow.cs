@@ -18,7 +18,7 @@ namespace PathTracer
     System.Windows.Forms.Timer updateUI = new System.Windows.Forms.Timer();
     Stopwatch sw = new Stopwatch();
     Renderer r = null;
-    const int bitmapWidth = 160;
+    const int bitmapWidth = 480; //160
     Bitmap bmp;
 
     CancellationTokenSource tokenSource;
@@ -55,18 +55,30 @@ namespace PathTracer
     {
       if (renderTask != null && !renderTask.IsCompleted && !renderTask.IsCanceled && !renderTask.IsFaulted)
       {
-        tokenSource.Cancel();
-        renderTask.Wait();
-        tokenSource.Dispose();
-        sw.Stop();
-        return;
+        TryAgain_Save:
+            try
+            {
+                bmp.Save(@"D:\NRG seminarska\" + DateTime.Now.ToString().Replace("/", "-").Replace(":", "-").Replace(" ", "_") + ".png", ImageFormat.Png);
+            }
+            catch (Exception)
+            {
+                Thread.Sleep(1);
+                goto TryAgain_Save;
+            }
+            //tokenSource.Cancel();
+            //renderTask.Wait();
+            //tokenSource.Dispose();
+            //sw.Stop();
+            return;
       }
 
       tokenSource = new CancellationTokenSource();
 
-      Scene s = Scene.CornellBox();
+      Scene s = Scene.AllMerlInOne();
 
-      bmp = new Bitmap(bitmapWidth, (int)Math.Round(bitmapWidth / s.AspectRatio), PixelFormat.Format24bppRgb);
+        //Scene s = Scene.CornellBox();
+
+        bmp = new Bitmap(bitmapWidth, (int)Math.Round(bitmapWidth / s.AspectRatio), PixelFormat.Format24bppRgb);
       pbxRender.Image = bmp;
 
       using (Graphics grD = Graphics.FromImage(bmp))
@@ -80,6 +92,7 @@ namespace PathTracer
       sw.Restart();
       renderTask = Task.Run(() => r.Render(s, token), token);
 
+            btnDoit.Text = "Save";
     }
 
         private void MainWindow_Load(object sender, EventArgs e)

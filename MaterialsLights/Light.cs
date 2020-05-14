@@ -11,6 +11,8 @@ namespace PathTracer
 
     public abstract double Pdf_Li(SurfaceInteraction si, Vector3 wi);
 
+
+
     public static Spectrum UniformSampleOneLight(SurfaceInteraction it, Scene s)
     {
       // Randomly choose a single light to sample, _light_
