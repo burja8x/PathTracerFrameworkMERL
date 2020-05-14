@@ -36,6 +36,11 @@ namespace PathTracer
     {
       return new Vector3(d * v.inner);
     }
+
+    public static double Distance(Vector3 v1, Vector3 v2)
+    {
+        return (v1 - v2).Length();
+    }
     /// <summary>
     /// Returns new vector as Cross product of v1 and v2
     /// </summary>
@@ -130,11 +135,11 @@ namespace PathTracer
       return new Vector3(-v1.inner);
     }
 
-        public override string ToString()
-        {
-            return $"x {x}  y {y}  z {z}";
-        }
+    public override string ToString()
+    {
+        return $"x {x}  y {y}  z {z}";
     }
+  }
 
   public static class Vector3Extensions
   {

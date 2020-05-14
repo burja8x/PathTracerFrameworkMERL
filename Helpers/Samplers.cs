@@ -18,8 +18,23 @@ namespace PathTracer
             // * radius // to se po naredi.
             return new Vector3(r * Math.Cos(phi), r * Math.Sin(phi), z);
     }
+        public static double UniformSpherePdf() {
+            return Utils.PiInv / 4;
+        }
 
-    public static (double, double) UniformSampleSquare()
+        public static Vector3 UniformSampleHemisphere()
+        {
+            double z = ThreadSafeRandom.NextDouble(); // samo tuki je razlika
+            double r = Math.Sqrt(Math.Max(0, 1.0 - z * z));
+            double phi = 2 * Math.PI * ThreadSafeRandom.NextDouble();
+            return new Vector3(r * Math.Cos(phi), r * Math.Sin(phi), z);
+        }
+        public static double UniformHemispherePdf()
+        {
+            return Utils.PiInv / 2;
+        }
+
+        public static (double, double) UniformSampleSquare()
     {
       var u = ThreadSafeRandom.NextDouble();
       var v = ThreadSafeRandom.NextDouble();
@@ -45,6 +60,12 @@ namespace PathTracer
       var z = Math.Sqrt(Math.Max(0, 1 - x * x - y * y));
       return new Vector3(x, y, z);
     }
+        public static double CosineHemispherePdf(Vector3 wo, Vector3 wi) {
+            if (!Utils.SameHemisphere(wo, wi))
+                return 0;
+
+            return Math.Abs(wi.z) * Utils.PiInv;
+        }
 
     /// <summary>
     /// Thread safe random function implementation

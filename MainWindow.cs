@@ -36,8 +36,15 @@ namespace PathTracer
 
     private void UpdateUI_Tick(object sender, EventArgs e)
     {
-      if (bmp != null)
-        r?.CopyBitmap(bmp);
+            try
+            {
+              if (bmp != null)
+                r?.CopyBitmap(bmp);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("ignore this ERROR");
+            }
       lblSPP.Text = $"SPP: {r?.SPP ?? 0}";
       lblTime.Text = $"Time: {sw.Elapsed.ToString()}";
       pbxRender.Invalidate();

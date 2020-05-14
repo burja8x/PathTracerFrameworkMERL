@@ -21,6 +21,8 @@ namespace PathTracer
         [STAThread]
         static void Main()
         {
+            Console.WriteLine(DateTime.Now.ToString().Replace("/","-").Replace(":","-").Replace(" ","_"));
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainWindow());

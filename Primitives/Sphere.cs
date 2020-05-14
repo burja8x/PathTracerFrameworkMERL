@@ -31,14 +31,18 @@ namespace PathTracer
             }
             // TODO: Compute sphere hit position and $\phi$
             double tShapeHit = t0;
-            if (tShapeHit <= 0) { // skor 0.
+            if (tShapeHit <= Renderer.Epsilon) { // skor 0.
                 tShapeHit = t1;
-                //if (t1 > ray.max) {
-                    //return (null,null);
+                //if (t1 > ray.max)
+                //{
+                //    return (null, null);
                 //}
             }
+
             Vector3 pHit = ray.Point(tShapeHit);
-            if (pHit.x == 0 && pHit.y == 0) {
+            //pHit.
+            if (pHit.x == 0 && pHit.y == 0)
+            {
                 pHit.x = 1e-5 * Radius;
             }
 
@@ -52,6 +56,7 @@ namespace PathTracer
         public override (SurfaceInteraction, double) Sample()
         {
             // TODO: Implement Sphere sampling
+            //Vector3 pObj = Samplers.CosineSampleHemisphere() * Radius;
             Vector3 pObj = Samplers.UniformSampleSphere() * Radius;
             pObj = pObj * (Radius / pObj.Length());
 

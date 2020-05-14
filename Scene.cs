@@ -23,6 +23,8 @@ namespace PathTracer
     public double ImagePlaneDistance { get; set; } = 8;
     public double ImagePlaneVerticalOffset { get; set; } = 0;
 
+        public static string brdfFileName = "nylon.binary";
+
     /// <summary>
     /// Finds closest intersection of ray with scene
     /// </summary>
@@ -70,20 +72,20 @@ namespace PathTracer
         {
             var s = new Scene()
             {
-                CameraOrigin = new Vector3(278, 274.4, -800),
+                CameraOrigin = new Vector3(278, 274.4, -548),// -800
                 AspectRatio = 1.0 / 1.0,
-                ImagePlaneWidth = 5.5 // 5.5
+                ImagePlaneWidth = 7 // 5.5
             };
 
             Shape el;
 
             // floor
-            el = new Quad(556.0, 559.2, Transform.Translate(556.0 / 2, 0, 559.2 / 2).A(Transform.RotateX(-90)));
+            el = new Quad(556.0, 559.2*3, Transform.Translate(556.0 / 2, 0, 559.2 / 2).A(Transform.RotateX(-90)));
             el.BSDF.Add(new Lambertian(Spectrum.ZeroSpectrum.FromRGB(Color.White)));
             s.Elements.Add(el);
       
             // celing
-            el = new Quad(556.0, 559.2, Transform.Translate(556.0 / 2, 548.8, 559.2 / 2).A(Transform.RotateX(90)));
+            el = new Quad(556.0, 559.2*3, Transform.Translate(556.0 / 2, 548.8, 559.2 / 2).A(Transform.RotateX(90)));
             el.BSDF.Add(new Lambertian(Spectrum.ZeroSpectrum.FromRGB(Color.White)));
             s.Elements.Add(el);
 
@@ -92,45 +94,71 @@ namespace PathTracer
             el.BSDF.Add(new Lambertian(Spectrum.ZeroSpectrum.FromRGB(Color.White)));
             s.Elements.Add(el);
 
+            // back2
+            el = new Quad(556.0, 548.8, Transform.Translate(556.0 / 2, 548.8 / 2, -550).A(Transform.RotateX(180)));
+            el.BSDF.Add(new Lambertian(Spectrum.ZeroSpectrum.FromRGB(Color.White)));
+            s.Elements.Add(el);
+
+
+            //double[] brdfs2 = ReadMerl.Read(@"D:\NRG seminarska\green-plastic.binary");
             //right
-            el = new Quad(559.2, 548.8, Transform.Translate(556.0, 548.8/2, 559.2/2).A(Transform.RotateY(90)));
+            el = new Quad(559.2*3, 548.8, Transform.Translate(556.0, 548.8/2, 559.2/2).A(Transform.RotateY(90)));
             el.BSDF.Add(new Lambertian(Spectrum.ZeroSpectrum.FromRGB(Color.Green)));
+            //el.BSDF.Add(new Merl(brdfs2));
             s.Elements.Add(el);
 
             //left
-            el = new Quad(559.2, 548.8, Transform.Translate(0, 548.8/2, 559.2/2).A(Transform.RotateY(-90)));
+            el = new Quad(559.2*3, 548.8, Transform.Translate(0, 548.8/2, 559.2/2).A(Transform.RotateY(-90)));
             el.BSDF.Add(new Lambertian(Spectrum.ZeroSpectrum.FromRGB(Color.Red)));
             s.Elements.Add(el);
 
             // luč
-            s.Elements.Add(new DiffuseAreaLight(new Disk(100, 0.1, Transform.Translate(278, 548, 280).A(Transform.RotateX(90))), Spectrum.Create(1), 30));
+            // kvadratna luč
+            s.Elements.Add(new DiffuseAreaLight(new Quad(170, 170, Transform.Translate(278, 548, 220).A(Transform.RotateX(90))), Spectrum.Create(1), 25));
+            s.Elements.Add(new DiffuseAreaLight(new Quad(170, 170, Transform.Translate(278, 548, -280).A(Transform.RotateX(90))), Spectrum.Create(1), 25));
+
+            //s.Elements.Add(new DiffuseAreaLight(new Disk(100, 0.1, Transform.Translate(278, 548, 280).A(Transform.RotateX(90))), Spectrum.Create(1), 20));
+            //s.Elements.Add(new DiffuseAreaLight(new Disk(100, 0.1, Transform.Translate(278, 548, 0).A(Transform.RotateX(90))), Spectrum.Create(1), 30));
+            //s.Elements.Add(new DiffuseAreaLight(new Disk(100, 0.1, Transform.Translate(278, 548, -280).A(Transform.RotateX(90))), Spectrum.Create(1), 20));
             //s.Elements.Add(new DiffuseAreaLight(new Sphere(80, Transform.Translate(278, 548, 280).A(Transform.RotateX(90))), Spectrum.Create(1), 20));
             //s.Elements.Add(new DiffuseAreaLight(new Sphere(80, Transform.Translate(278, 548, 280)), Spectrum.Create(1), 20));
             //s.Elements.Add(new DiffuseAreaLight(new Sphere(60, Transform.Translate(278, 280, 300).A(Transform.RotateX(90))), Spectrum.Create(1), 20));
             //s.Elements.Add(new DiffuseAreaLight(new Sphere(80, Transform.Translate(400, 80, 400).A(Transform.RotateX(90))), Spectrum.Create(1), 20));
             //s.Elements.Add(new DiffuseAreaLight(new Sphere(1100, Transform.Translate(278, 280, 280).A(Transform.RotateX(90))), Spectrum.Create(1), 20));
 
-            double[] brdfs1 = ReadMerl.Read(@"D:\NRG seminarska\silver-metallic-paint.binary");
-            double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\red-fabric.binary");
+            //double[] brdfs1 = ReadMerl.Read(@"D:\NRG seminarska\gold-metallic-paint.binary");
+            //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\white-acrylic.binary");
+            //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\white-diffuse-bball.binary");
+            //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\white-fabric.binary");
+            //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\white-fabric2.binary");
+            //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\white-marble.binary");
+            //double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\white-paint.binary");
+            double[] brdfs0 = ReadMerl.Read(@"D:\NRG seminarska\" + brdfFileName);
 
             // modra krogla
             //el = new Sphere(100, Transform.Translate(150, 100, 420));
-            el = new Sphere(200, Transform.Translate(200, 200, 420));
+            //el = new Sphere(130, Transform.Translate(180, 130, 400));
             //el.BSDF.Add(new SpecularReflection(Spectrum.ZeroSpectrum.FromRGB(Color.White), 0, 0));
             //el.BSDF.Add(new Lambertian(Spectrum.ZeroSpectrum.FromRGB(Color.Blue)));
             //el.BSDF.Add(new OrenNayar(Spectrum.ZeroSpectrum.FromRGB(Color.Blue), 10));
-            el.BSDF.Add(new Merl(brdfs0));
-            s.Elements.Add(el);
+            //el.BSDF.Add(new Merl(brdfs1));
+            //s.Elements.Add(el);
 
             //rumena krogla
-            el = new Sphere(100, Transform.Translate(400, 100, 230));
+            //el = new Sphere(130, Transform.Translate(400, 130, 230));
+            el = new Sphere(200, Transform.Translate(250, 200, 130));
 
             //el.BSDF.Add(new SpecularReflection(Spectrum.ZeroSpectrum.FromRGB(Color.White),0,0));
             //el.BSDF.Add(new SpecularReflection(Spectrum.ZeroSpectrum.FromRGB(Color.White),1,1.5));
             //el.BSDF.Add(new Lambertian(Spectrum.ZeroSpectrum.FromRGB(Color.Yellow)));
             //el.BSDF.Add(new OrenNayar(Spectrum.ZeroSpectrum.FromRGB(Color.Yellow), 5));
-            el.BSDF.Add(new Merl(brdfs1));
+            el.BSDF.Add(new Merl(brdfs0));
             s.Elements.Add(el);
+
+
+            //el = new Sphere(60, Transform.Translate(180, 60, 100));
+            //el.BSDF.Add(new Lambertian(Spectrum.ZeroSpectrum.FromRGB(Color.Yellow)));
+            //s.Elements.Add(el);
 
             return s;
 

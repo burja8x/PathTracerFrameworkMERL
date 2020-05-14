@@ -18,7 +18,6 @@ namespace PathTracer
 
         public static double[] Read(string file) {
             BinaryReader binReader = new BinaryReader(File.Open(file, FileMode.Open));
-            //BinaryReader binReader = new BinaryReader(File.Open(@"D:\NRG seminarska\gold-paint.binary", FileMode.Open));
 
             int n = 1;
             n *= binReader.ReadInt32();
@@ -70,14 +69,14 @@ namespace PathTracer
                 //}
                 binReader.Close();
 
-                Console.WriteLine("first 10.");
-                for (int mm = 0; mm < 10; mm++){
-                    Console.WriteLine(brdf[mm]);
-                }
+                //Console.WriteLine("first 10.");
+                //for (int mm = 0; mm < 10; mm++){
+                //    Console.WriteLine(brdf[mm]);
+                //}
                 
-                for(int nn = 1000000; nn < 1000010; nn++){
-                    Console.WriteLine(brdf[nn]);
-                }
+                //for(int nn = 1000000; nn < 1000010; nn++){
+                //    Console.WriteLine(brdf[nn]);
+                //}
 
                 Console.WriteLine("READ");
                 return brdf;

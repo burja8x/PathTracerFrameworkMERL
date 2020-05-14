@@ -12,7 +12,7 @@ namespace PathTracer
     {
         const int BRDF_SAMPLING_RES_THETA_H = 90;
         const int BRDF_SAMPLING_RES_THETA_D = 90;
-        const int BRDF_SAMPLING_RES_PHI_D = 360 / 2;
+        const int BRDF_SAMPLING_RES_PHI_D = 360;
         double[] brdf;
         public Merl(double[] brdfs) {
             brdf = brdfs;
@@ -20,15 +20,9 @@ namespace PathTracer
 
         public override Spectrum f(Vector3 wo, Vector3 wi)
         {
-            //wo.x = 0.46996647;
-            //wo.y = -0.52372897;
-            //wo.z = 0.71052057;
-            //wi.x = 0.9666774;
-            //wi.y = 0.15925728;
-            //wi.z = 0.20042926;
-
             //Console.WriteLine($"wo {wo}");
             //Console.WriteLine($"wi {wi}");
+
 
             Vector3 wh = wo + wi; 
             if (wh.z < 0.0)
@@ -44,7 +38,7 @@ namespace PathTracer
 
             wh = wh.Normalize();
             // Directly compute the rows of the matrix performing the rotation of w_h to(0, 0, 1)
-            double theta_h = SphericalTheta(wh);
+            
             double cos_phi_h = Utils.CosPhi(wh);
             double sin_phi_h = Utils.SinPhi(wh);
             double cos_theta_h = Utils.CosTheta(wh);
@@ -60,57 +54,101 @@ namespace PathTracer
                 phi_d = phi_d - Math.PI;
             }
 
-            int theta_h_idx = MapIndex(Math.Sqrt(Math.Max(0.0, 2.0 * theta_h / Math.PI)), 1.0, BRDF_SAMPLING_RES_THETA_H); // theta half index
-            int theta_d_idx = MapIndex(theta_d, Math.PI / 2.0, BRDF_SAMPLING_RES_THETA_D); // theta diff index
-            int phi_d_idx = MapIndex(phi_d, Math.PI, BRDF_SAMPLING_RES_PHI_D); // phi diff index
-            int i = phi_d_idx + BRDF_SAMPLING_RES_PHI_D * (theta_d_idx + theta_h_idx * BRDF_SAMPLING_RES_THETA_D);
-            
-            //Console.WriteLine(i);
-            //if (i < brdf.Length)
-            //{
-            //    Console.WriteLine("EX");
-            //    return Spectrum.ZeroSpectrum;
-            //}
-            //if (3 * i > brdf.Length) {
-                
-            //    Console.WriteLine("CX");
-            //    return Spectrum.ZeroSpectrum;
-            //}
+            double theta_h = SphericalTheta(wh);
 
-            Debug.Assert(i < brdf.Length);
+            // Get i.
+            int theta_h_idx = ThetaHalfIndex(theta_h);
+            int theta_d_idx = ThetaDiffIndex(theta_d);
+            int phi_d_idx = PhiDiffIndex(phi_d);
+            int i = phi_d_idx + (BRDF_SAMPLING_RES_PHI_D / 2) * (theta_d_idx + theta_h_idx * BRDF_SAMPLING_RES_THETA_D);
 
             return Spectrum.Create(Vector<double>.Build.Dense(new[] { brdf[3 * i], brdf[3 * i + 1], brdf[3 * i + 2] }));
-            //return Spectrum.ZeroSpectrum;
         }
-        private int MapIndex(double val, double max, int nVals) {
-            return Clamp((int)(val / max * nVals), 0, nVals - 1);
-        }
+        //private int MapIndex(double val, double max, int nVals) {
+        //    return Clamp((int)(val / max * nVals), 0, nVals - 1);
+        //}
+
         private double SphericalTheta(Vector3 v) {
             return Math.Acos(Utils.Clamp(v.z, -1, 1));
         }
-    /// Compute the value of phi for the vector in the spherical coordinate system
+        /// Compute the value of phi for the vector in the spherical coordinate system
         private double SphericalPhi(Vector3 v) {
             double x = Math.Atan2(v.y, v.x);
-            if (x < 0) {
+            if (x < 0)
+            {
+                //Console.WriteLine("hi");
                 x = x + Math.PI * 2.0;
             }
             return x;
         }
 
-        private int Clamp(int x, int min, int max){
-            if (x < min){
-                return min;
-            } else if (x > max) {
-                return max;
-            } else {
-                return x;
-            }
+        //private int Clamp(int x, int min, int max){
+        //    if (x < min){
+        //        return min;
+        //    } else if (x > max) {
+        //        return max;
+        //    } else {
+        //        return x;
+        //    }
+        //}
+
+        // Lookup theta_half index
+        // This is a non-linear mapping!
+        // In:  [0 .. pi/2]
+        // Out: [0 .. 89]
+        static int ThetaHalfIndex(double thetaHalf)
+        {
+            if (thetaHalf <= 0.0)
+                return 0;
+            double thetaHalfDeg = ((thetaHalf / (Math.PI / 2.0)) * BRDF_SAMPLING_RES_THETA_H);
+            double temp = thetaHalfDeg * BRDF_SAMPLING_RES_THETA_H;
+            temp = Math.Sqrt(temp);
+            int retVal = (int)temp;
+            if (retVal < 0) retVal = 0;
+            if (retVal >= BRDF_SAMPLING_RES_THETA_H)
+                retVal = BRDF_SAMPLING_RES_THETA_H - 1;
+            return retVal;
         }
 
 
+        // Lookup theta_diff index
+        // In:  [0 .. pi/2]
+        // Out: [0 .. 89]
+        static int ThetaDiffIndex(double thetaDiff)
+        {
+            int tmp = (int)(thetaDiff / (Math.PI * 0.5) * BRDF_SAMPLING_RES_THETA_D);
+            if (tmp < 0)
+                return 0;
+            else if (tmp < BRDF_SAMPLING_RES_THETA_D - 1)
+                return tmp;
+            else
+                return BRDF_SAMPLING_RES_THETA_D - 1;
+        }
+
+
+        // Lookup phi_diff index
+        static int PhiDiffIndex(double phiDiff)
+        {
+            // Because of reciprocity, the BRDF is unchanged under
+            // phi_diff -> phi_diff + M_PI
+            if (phiDiff < 0.0)
+                phiDiff += Math.PI;
+
+            // In: phi_diff in [0 .. pi]
+            // Out: tmp in [0 .. 179]
+            int tmp = (int)(phiDiff / Math.PI * BRDF_SAMPLING_RES_PHI_D / 2);
+            if (tmp < 0)
+                return 0;
+            else if (tmp < BRDF_SAMPLING_RES_PHI_D / 2 - 1)
+                return tmp;
+            else
+                return BRDF_SAMPLING_RES_PHI_D / 2 - 1;
+        }
+
         public override (Spectrum, Vector3, double) Sample_f(Vector3 wo)
         {
-            var wi = Samplers.UniformSampleSphere();
+            //var wi = Samplers.CosineSampleHemisphere();
+            var wi = Samplers.UniformSampleHemisphere();
             if (wo.z < 0)
                 wi.z *= -1;
             double pdf = Pdf(wo, wi);
@@ -119,10 +157,9 @@ namespace PathTracer
 
         public override double Pdf(Vector3 wo, Vector3 wi)
         {
-            if (!Utils.SameHemisphere(wo, wi))
-                return 0;
 
-            return Math.Abs(wi.z) * Utils.PiInv; // wi.z == cosTheta
+            return Samplers.UniformHemispherePdf();
+            //return Samplers.CosineHemispherePdf(wo, wi);
         }
     }
 }

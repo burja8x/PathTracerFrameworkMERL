@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -21,7 +22,7 @@ namespace PathTracer
     private Bitmap finalRgbImage;
     private double[,] pixelWeights;
     private long totalSamples = 0;
-    private const long maxTotalSamples = 10000000;
+    private const long maxTotalSamples = 3000000;
 
     private Bitmap bmp;
 
@@ -83,27 +84,56 @@ namespace PathTracer
       };
             try
             {
-                while (totalSamples < maxTotalSamples)
+                DirectoryInfo d = new DirectoryInfo(@"D:\NRG seminarska\");//Assuming Test is your Folder
+                FileInfo[] Files = d.GetFiles("*.binary"); //Getting Text files
+                
+                foreach (FileInfo file in Files)
                 {
-                    var samples = SamplePointsOnImagePlane(s, 1);
-                    Parallel.ForEach(samples, po, samp =>
+                    Scene.brdfFileName = file.Name;
+                    Console.WriteLine(file.Name);
+
+                    while (totalSamples < maxTotalSamples)
                     {
-                    // if cancel requested from GUI, cancel
-                    token.ThrowIfCancellationRequested();
+                        var samples = SamplePointsOnImagePlane(s, 1);
+                        Parallel.ForEach(samples, po, samp =>
+                        {
+                        // if cancel requested from GUI, cancel
+                        token.ThrowIfCancellationRequested();
 
-                        var rayTo = new Vector3(samp.X - s.ImagePlaneWidth / 2, samp.Y - s.ImagePlaneHeight / 2 + s.ImagePlaneVerticalOffset, s.ImagePlaneDistance);
+                            var rayTo = new Vector3(samp.X - s.ImagePlaneWidth / 2, samp.Y - s.ImagePlaneHeight / 2 + s.ImagePlaneVerticalOffset, s.ImagePlaneDistance);
                         // ray through point
-                      Ray r = new Ray(s.CameraOrigin, rayTo);
+                        Ray r = new Ray(s.CameraOrigin, rayTo);
 
-                      // evaluate radiance
-                      Spectrum L = integrator.Li(r, s);
+                        // evaluate radiance
+                        Spectrum L = integrator.Li(r, s);
 
-                      // add radiance to image
-                      AddToImage(samp, L, s);
+                        // add radiance to image
+                        AddToImage(samp, L, s);
 
-                    });
+                        });
 
+                    }
+
+                Neki:
+                    try
+                    {
+                        finalRgbImage.Save(@"D:\NRG seminarska\" + DateTime.Now.ToString().Replace("/", "-").Replace(":", "-").Replace(" ", "_") + "_" + file.Name.Replace(".binary", "") + ".png", ImageFormat.Png);
+                    }
+                    catch (Exception)
+                    {
+                        Thread.Sleep(1);
+                        goto Neki;
+                    }
+                    s = Scene.CornellBox();
+                    finalImageSum = new Spectrum[pixelWidth, pixelHeight];
+                    finalImage = new Spectrum[pixelWidth, pixelHeight];
+                    finalRgbImage = new Bitmap(160, (int)Math.Round(160 / s.AspectRatio), PixelFormat.Format24bppRgb);
+                    pixelWeights = new double[pixelWidth, pixelHeight];
+                    bmp = finalRgbImage;
+                    totalSamples = 0;
+                    //bmp = b;
                 }
+
             }
             catch (OperationCanceledException)
             {
