@@ -1,5 +1,5 @@
 # PathTracerFrameworkMERL
 MERL BRDF support for Path Tracing Framework
 
-![alt text](https://github.com/burja8x/PathTracerFrameworkMERL/prvih49.png)
-![alt text](https://github.com/burja8x/PathTracerFrameworkMERL/zadnjih49.png)
+![Rezultati prvih 49 po abecedi](https://github.com/burja8x/PathTracerFrameworkMERL/blob/master/prvih49.png)
+![Zadnjih 49 po abecedi](https://github.com/burja8x/PathTracerFrameworkMERL/blob/master/zadnjih49.png)
