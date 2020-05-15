@@ -24,8 +24,6 @@ namespace PathTracer
     public double ImagePlaneDistance { get; set; } = 8;
     public double ImagePlaneVerticalOffset { get; set; } = 0;
 
-        public static string brdfFileName = "alum-bronze.binary";
-
     /// <summary>
     /// Finds closest intersection of ray with scene
     /// </summary>
@@ -244,57 +242,62 @@ namespace PathTracer
             //}
 
 
-            int xOff = 38;
-            int yOff = 38;
+            //int xOff = 38;
+            //int yOff = 38;
+            //int countSpheres = 0;
+            //foreach (FileInfo file in Files)
+            //{
+            //    //if (countSpheres < 49) {
+            //    //    countSpheres++;
+            //    //    continue;
+            //    //}
+
+            //    double[] brdf0 = ReadMerl.Read(@"D:\NRG seminarska\" + file.Name);
+
+            //    el = new Sphere(36, Transform.Translate(xOff, yOff, 480));
+            //    el.BSDF.Add(new Merl(brdf0));
+            //    s.Elements.Add(el);
+
+            //    countSpheres++;
+            //    xOff += 77;
+            //    if (countSpheres % 7 == 0)
+            //    {
+            //        yOff += 77;
+            //        xOff = 38;
+            //    }
+
+            //    if (countSpheres == 49) //49 //98
+            //    {
+            //        break;
+            //    }
+            //}
+
+
+            int xOff = 55;
+            int yOff = 55;
             int countSpheres = 0;
             foreach (FileInfo file in Files)
             {
                 double[] brdf0 = ReadMerl.Read(@"D:\NRG seminarska\" + file.Name);
 
-                el = new Sphere(36, Transform.Translate(xOff, yOff, 480));
+                el = new Sphere(50, Transform.Translate(xOff, yOff, 480));
                 el.BSDF.Add(new Merl(brdf0));
+                el.BSDF.Add(new SpecularReflection(Spectrum.ZeroSpectrum.FromRGB(Color.White), 1, 1.5));
                 s.Elements.Add(el);
 
                 countSpheres++;
-                xOff += 77;
-                if (countSpheres % 7 == 0)
+                xOff += 105;
+                if (countSpheres % 5 == 0)
                 {
-                    yOff += 77;
-                    xOff = 38;
+                    yOff += 105;
+                    xOff = 55;
                 }
 
-                if (countSpheres == 49)
+                if (countSpheres == 25)
                 {
                     break;
                 }
             }
-
-
-            //int xOff = 55;
-            //int yOff = 55;
-            //int countSpheres = 0;
-            //foreach (FileInfo file in Files)
-            //{
-            //    double[] brdf0 = ReadMerl.Read(@"D:\NRG seminarska\" + file.Name);
-
-            //    el = new Sphere(50, Transform.Translate(xOff, yOff, 480));
-            //    el.BSDF.Add(new Merl(brdf0));
-            //    //el.BSDF.Add(new SpecularReflection(Spectrum.ZeroSpectrum.FromRGB(Color.White), 2, 2));
-            //    s.Elements.Add(el);
-
-            //    countSpheres++;
-            //    xOff += 105;
-            //    if (countSpheres % 5 == 0)
-            //    {
-            //        yOff += 105;
-            //        xOff = 55;
-            //    }
-
-            //    if (countSpheres == 25)
-            //    {
-            //        break;
-            //    }
-            //}
 
 
 

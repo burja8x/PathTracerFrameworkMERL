@@ -80,9 +80,9 @@ namespace PathTracer
             double theta_half = Math.Acos(wh.z);
             double fi_half = Math.Atan2(wh.y, wh.x);
 
-            Vector3 biNormal = new Vector3(0, 1, 0);
             Vector3 normal = new Vector3(0, 0, 1);
             Vector3 temp = RotateVector(wi, normal, -fi_half);
+            Vector3 biNormal = new Vector3(0, 1, 0);
             Vector3 diff = RotateVector(temp, biNormal, -theta_half);
 
             double theta_diff = Math.Acos(diff.z);
@@ -127,7 +127,6 @@ namespace PathTracer
             double x = Math.Atan2(v.y, v.x);
             if (x < 0)
             {
-                //Console.WriteLine("hi");
                 x = x + Math.PI * 2.0;
             }
             return x;
@@ -172,7 +171,6 @@ namespace PathTracer
         static int PhiDiffIndex(double phiDiff)
         {
             // Because of reciprocity, the BRDF is unchanged under
-            // phi_diff -> phi_diff + M_PI
             if (phiDiff < 0.0)
                 phiDiff += Math.PI;
 
@@ -199,7 +197,6 @@ namespace PathTracer
 
         public override double Pdf(Vector3 wo, Vector3 wi)
         {
-
             //return Samplers.UniformHemispherePdf();
             return Samplers.CosineHemispherePdf(wo, wi);
         }
